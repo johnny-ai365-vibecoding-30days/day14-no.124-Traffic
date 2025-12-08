@@ -1,6 +1,8 @@
-var colorDead, colorAcci, lngDim, latDim, projection, overlay, padding, mapOffset, weekDayTable, gPrints, monthDim, weekdayDim, hourDim, map, barAcciHour, styledMap, initMap, transform, ifdead, setCircle, initCircle, tranCircle, updateGraph;
+var colorDead, colorAcci, colorDeadScale, colorAcciScale, lngDim, latDim, projection, overlay, padding, mapOffset, weekDayTable, gPrints, monthDim, weekdayDim, hourDim, map, barAcciHour, styledMap, initMap, transform, ifdead, setCircle, initCircle, tranCircle, updateGraph;
 colorDead = "#de2d26";
 colorAcci = "rgb(255, 204, 0)";
+colorDeadScale = d3.scale.ordinal().range([colorDead]);
+colorAcciScale = d3.scale.ordinal().range([colorAcci]);
 lngDim = null;
 latDim = null;
 projection = null;
@@ -324,22 +326,22 @@ d3.tsv("./accidentXY_light.tsv", function(err, tsvBody){
   };
   marginWk = marginMt;
   marginHr = marginMt;
-  barPerMonth.width(barMt).height(100).margins(marginMt).dimension(monthDim).group(deathMonth).x(d3.scale.ordinal().domain(d3.range(1, 13))).xUnits(dc.units.ordinal).elasticY(true).colors(colorDead).on("filtered", function(c, f){
+  barPerMonth.width(barMt).height(100).margins(marginMt).dimension(monthDim).group(deathMonth).x(d3.scale.ordinal().domain(d3.range(1, 13))).xUnits(dc.units.ordinal).elasticY(true).colors(colorDeadScale).on("filtered", function(c, f){
     return updateGraph();
   }).yAxis().ticks(3);
-  barPerWeekDay.width(barWk).height(100).margins(marginWk).dimension(weekdayDim).group(deathWeekDay).x(d3.scale.ordinal().domain(weekDayTable)).xUnits(dc.units.ordinal).gap(4).elasticY(true).colors(colorDead).on("filtered", function(c, f){
+  barPerWeekDay.width(barWk).height(100).margins(marginWk).dimension(weekdayDim).group(deathWeekDay).x(d3.scale.ordinal().domain(weekDayTable)).xUnits(dc.units.ordinal).gap(4).elasticY(true).colors(colorDeadScale).on("filtered", function(c, f){
     return updateGraph();
   }).yAxis().ticks(3);
-  barPerHour.width(barHr).height(100).margins(marginHr).dimension(hourDim).group(deathHour).x(d3.scale.linear().domain([0, 24])).elasticY(true).colors(colorDead).on("filtered", function(c, f){
+  barPerHour.width(barHr).height(100).margins(marginHr).dimension(hourDim).group(deathHour).x(d3.scale.linear().domain([0, 24])).elasticY(true).colors(colorDeadScale).on("filtered", function(c, f){
     return updateGraph();
   }).yAxis().ticks(3);
-  barAcciMonth.width(barMt).height(100).margins(marginMt).dimension(monthDim).group(acciMonth).x(d3.scale.ordinal().domain(d3.range(1, 13))).xUnits(dc.units.ordinal).elasticY(true).colors(colorAcci).on("filtered", function(c, f){
+  barAcciMonth.width(barMt).height(100).margins(marginMt).dimension(monthDim).group(acciMonth).x(d3.scale.ordinal().domain(d3.range(1, 13))).xUnits(dc.units.ordinal).elasticY(true).colors(colorAcciScale).on("filtered", function(c, f){
     return updateGraph();
   }).yAxis().ticks(4);
-  barAcciWeekDay.width(barWk).height(100).margins(marginWk).dimension(weekdayDim).group(acciWeekDay).x(d3.scale.ordinal().domain(weekDayTable)).xUnits(dc.units.ordinal).elasticY(true).gap(4).colors(colorAcci).on("filtered", function(c, f){
+  barAcciWeekDay.width(barWk).height(100).margins(marginWk).dimension(weekdayDim).group(acciWeekDay).x(d3.scale.ordinal().domain(weekDayTable)).xUnits(dc.units.ordinal).elasticY(true).gap(4).colors(colorAcciScale).on("filtered", function(c, f){
     return updateGraph();
   }).yAxis().ticks(4);
-  barAcciHour.width(barHr).height(100).margins(marginHr).dimension(hourDim).group(acciHour).x(d3.scale.linear().domain([0, 24])).elasticY(true).colors(colorAcci).on("filtered", function(c, f){
+  barAcciHour.width(barHr).height(100).margins(marginHr).dimension(hourDim).group(acciHour).x(d3.scale.linear().domain([0, 24])).elasticY(true).colors(colorAcciScale).on("filtered", function(c, f){
     return updateGraph();
   }).yAxis().ticks(4);
   dc.renderAll();

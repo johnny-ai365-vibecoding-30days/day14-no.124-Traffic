@@ -3,6 +3,8 @@
 
 colorDead = "\#de2d26"
 colorAcci = "rgb(255, 204, 0)"
+colorDeadScale = d3.scale.ordinal!.range [colorDead]
+colorAcciScale = d3.scale.ordinal!.range [colorAcci]
 
 
 ## used by map and crossfilter
@@ -409,7 +411,7 @@ barPerMonth.width(barMt)
 	.x(d3.scale.ordinal!.domain(d3.range(1,13)))
 	.xUnits(dc.units.ordinal)
 	.elasticY(true)
-	.colors(colorDead)
+        .colors(colorDeadScale)
 	.on("filtered", (c, f)-> updateGraph!)
 	.yAxis!
 	.ticks(3)
@@ -424,7 +426,7 @@ barPerWeekDay.width(barWk)
 	.xUnits(dc.units.ordinal)
 	.gap(4)
 	.elasticY(true)
-	.colors(colorDead)
+        .colors(colorDeadScale)
 	.on("filtered", (c, f)-> updateGraph!)
 	.yAxis!
 	.ticks(3)
@@ -436,7 +438,7 @@ barPerHour.width(barHr)
 	.group(deathHour)
 	.x(d3.scale.linear!.domain([0, 24]))
 	.elasticY(true)
-	.colors(colorDead)
+        .colors(colorDeadScale)
 	.on("filtered", (c, f)-> updateGraph!)
 	.yAxis!
 	.ticks(3)
@@ -452,7 +454,7 @@ barAcciMonth.width(barMt)
 	.x(d3.scale.ordinal!.domain(d3.range(1,13)))
 	.xUnits(dc.units.ordinal)
 	.elasticY(true)
-	.colors(colorAcci)
+        .colors(colorAcciScale)
 	.on("filtered", (c, f)-> updateGraph!)
 	.yAxis!
 	.ticks(4)
@@ -467,7 +469,7 @@ barAcciWeekDay.width(barWk)
 	.xUnits(dc.units.ordinal)
 	.elasticY(true)
 	.gap(4)
-	.colors(colorAcci)
+        .colors(colorAcciScale)
 	.on("filtered", (c, f)-> updateGraph!)
 	.yAxis!
 	.ticks(4)
@@ -479,7 +481,7 @@ barAcciHour.width(barHr)
 	.group(acciHour)
 	.x(d3.scale.linear!.domain([0, 24]))
 	.elasticY(true)
-	.colors(colorAcci)
+        .colors(colorAcciScale)
 	.on("filtered", (c, f)-> updateGraph!)
 	.yAxis!
 	.ticks(4)
