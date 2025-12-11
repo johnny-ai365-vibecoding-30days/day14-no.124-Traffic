@@ -286,12 +286,12 @@ d3.tsv("./accidentXY_light.tsv", function (err, tsvBody) {
   navls = [
     {
       ttl: "事故交叉篩選",
-      txt: "這裡呈現 2013 年 1–10 月新竹地區的交通事故，共 13,200 件、超過 25 起死亡。橘色代表事故，紅色代表發生死亡的事故。</br></br>（點擊此區開始導覽。）",
+      txt: "這裡呈現 2024 年臺北市 A1 及 A2 類交通事故明細，共 51,810 件事故、223 起死亡。黃色代表事故，紅色代表發生死亡的事故。</br></br>（點擊此區開始導覽。）",
       act: function () {},
     },
     {
-      ttl: "2013 年每月死亡數",
-      txt: "下方為每月統計：橘色代表事故，紅色代表死亡事故。可以看到 4 月沒有死亡案例，但事故量仍然偏高。（點擊前往「星期別」）",
+      ttl: "2024 年每月趨勢",
+      txt: "黃色是事故數量，紅色是死亡。可以看到，每個月的車禍數量差不多，但 4 月的車禍死亡最少。（點擊前往「星期別」）",
       act: function () {
         return d3.selectAll(".fltWeek, .fltHour").transition().style({
           opacity: 0.2,
@@ -300,7 +300,7 @@ d3.tsv("./accidentXY_light.tsv", function (err, tsvBody) {
     },
     {
       ttl: "星期別",
-      txt: "各星期的事故數相當平均，不過在資料中週一沒有死亡事故。（點擊前往「時段」）",
+      txt: "各星期的事故數相當平均，其中星期二、星期三的死亡最少。（點擊前往「時段」）",
       act: function () {
         d3.selectAll(".fltMonth, .fltHour").transition().style({
           opacity: 0.2,
@@ -312,7 +312,7 @@ d3.tsv("./accidentXY_light.tsv", function (err, tsvBody) {
     },
     {
       ttl: "時段",
-      txt: "晚上 7 點後事故逐漸減少，0–7 點最低。但從死亡事故看，0–7 點卻相當致命。要降低死亡事故，這段時間是好的切入點。</br></br>想知道這些事故在哪裡嗎？（點擊看看）",
+      txt: "一天當中，0–7 點的車禍數量很少。但以凌晨兩點為例，車禍數量很少，但死亡比例很高。</br></br>想知道這些事故在哪裡嗎？（點擊看看）",
       act: function () {
         d3.selectAll(".fltMonth, .fltWeek").transition().style({
           opacity: 0.2,
@@ -341,7 +341,7 @@ d3.tsv("./accidentXY_light.tsv", function (err, tsvBody) {
     },
     {
       ttl: "地理交叉篩選",
-      txt: "反過來也行，放大地圖任何區域，圖表會跟著更新。現在顯示的是火車站周邊。（點擊切換另一個地理篩選）",
+      txt: "反過來也行，放大地圖任何區域，圖表會跟著更新。現在顯示的是台北車站周邊。（點擊切換另一個地理篩選）",
       act: function () {
         map.setView({ lat: 25.047675, lng: 121.517055 }, 14);
         return setTimeout(function () {
@@ -351,12 +351,12 @@ d3.tsv("./accidentXY_light.tsv", function (err, tsvBody) {
     },
     {
       ttl: "地理交叉篩選",
-      txt: "現在我們移到交大附近。</br></br>程式化產生的視覺化有個好處：開發一次後，只要換資料就能快速得到最新圖表。</br></br>開始自己探索吧！用左側縮放滑桿或方向箭頭，也能直接拖曳地圖在城市中移動。",
+      txt: "我們也可以移到台大附近。</br></br>程式化產生的視覺化有個好處：開發一次後，只要換資料就能快速得到最新圖表。</br></br>開始自己探索吧！用左側縮放滑桿或方向箭頭，也能直接拖曳地圖在城市中移動。",
       act: function () {
-        return map.panTo({
-          lat: 25.033968,
-          lng: 121.564468,
-        });
+        return map.setView({
+          lat: 25.01734,
+          lng: 121.5395,
+        }, 15);
       },
     },
   ];
