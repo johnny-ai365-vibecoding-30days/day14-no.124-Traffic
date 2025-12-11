@@ -136,7 +136,13 @@ d3.tsv("./accidentXY_light.tsv", function (err, tsvBody) {
   tsvBody.filter(function (d) {
     d.GoogleLng = +d.GoogleLng;
     d.GoogleLat = +d.GoogleLat;
-    d.date = new Date(d["年"], d["月"], d["日"], d["時"], d["分"]);
+    // 將時間欄位轉成數字，避免交叉篩選時以字串比較導致範圍內沒有資料
+    d["年"] = +d["年"];
+    d["月"] = +d["月"];
+    d["日"] = +d["日"];
+    d["時"] = +d["時"];
+    d["分"] = +d["分"];
+    d.date = new Date(d["年"] + 1911, d["月"] - 1, d["日"], d["時"], d["分"]);
     d.week = weekDayTable[d.date.getDay()];
     d.dead = +d["2-30"] + +d["死"];
     if (d.dead > 0) {
@@ -329,7 +335,7 @@ d3.tsv("./accidentXY_light.tsv", function (err, tsvBody) {
         d3.selectAll(".filter").transition().style({
           opacity: 1,
         });
-        return hourDim.filter([0, 8]);
+        return hourDim.filterRange([0, 8]);
       },
     },
     {
