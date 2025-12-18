@@ -56,7 +56,7 @@ var colorDead,
   causeCodeMap;
 colorDead = "#de2d26";
 colorAcci = "rgb(255, 204, 0)";
-colorDrunk = "royalblue";
+colorDrunk = "#00e5ff";
 colorDeadScale = d3.scale.ordinal().range([colorDead]);
 colorAcciScale = d3.scale.ordinal().range([colorAcci]);
 colorDrunkScale = d3.scale.ordinal().range([colorDrunk]);
@@ -563,18 +563,41 @@ setCircle = function (it) {
         return map.latLngToLayerPoint([it.GoogleLat, it.GoogleLng]).y;
       },
       r: function (it) {
+        if (it.isDrunk) {
+          return "5px";
+        }
         return ifdead(it, "5px", "2.5px");
       },
+    })
+    .attr("class", function (d) {
+      var classes;
+      classes = ["map-marker"];
+      if (d.isDrunk) {
+        classes.push("marker-drunk");
+      }
+      if (d.dead > 0) {
+        classes.push("marker-dead");
+      }
+      if (highlightDrunk && d.isDrunk) {
+        classes.push("marker-drunk--active");
+      }
+      return classes.join(" ");
     })
     .style({
       fill: function (it) {
         if (highlightDrunk && it.isDrunk) {
           return colorDrunk;
         }
+        if (it.isDrunk) {
+          return colorDrunk;
+        }
         return ifdead(it, colorDead, colorAcci);
       },
       position: "absolute",
       opacity: function (it) {
+        if (highlightDrunk) {
+          return it.isDrunk ? 1 : 0;
+        }
         return ifdead(it, 1, 0.3);
       },
     });
