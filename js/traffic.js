@@ -56,7 +56,7 @@ var colorDead,
   causeCodeMap;
 colorDead = "#de2d26";
 colorAcci = "rgb(255, 204, 0)";
-colorDrunk = "royalblue";
+colorDrunk = "#00eaff";
 colorDeadScale = d3.scale.ordinal().range([colorDead]);
 colorAcciScale = d3.scale.ordinal().range([colorAcci]);
 colorDrunkScale = d3.scale.ordinal().range([colorDrunk]);
@@ -563,6 +563,9 @@ setCircle = function (it) {
         return map.latLngToLayerPoint([it.GoogleLat, it.GoogleLng]).y;
       },
       r: function (it) {
+        if (highlightDrunk && it.isDrunk) {
+          return "5px";
+        }
         return ifdead(it, "5px", "2.5px");
       },
     })
@@ -575,8 +578,14 @@ setCircle = function (it) {
       },
       position: "absolute",
       opacity: function (it) {
+        if (highlightDrunk && it.isDrunk) {
+          return 1;
+        }
         return ifdead(it, 1, 0.3);
       },
+    })
+    .classed("drunk-marker", function (it) {
+      return highlightDrunk && it.isDrunk;
     });
 };
 initCircle = function (it) {
@@ -592,8 +601,14 @@ tranCircle = function (it) {
   });
 };
 updateGraph = function () {
-  var dt;
-  dt = gPrints.selectAll("circle").data(monthDim.top(Infinity));
+  var dt, visibleData;
+  visibleData = monthDim.top(Infinity);
+  if (highlightDrunk) {
+    visibleData = visibleData.filter(function (it) {
+      return it.isDrunk;
+    });
+  }
+  dt = gPrints.selectAll("circle").data(visibleData);
   dt.enter().append("circle").call(setCircle);
   dt.call(setCircle);
   return dt.exit().remove();
