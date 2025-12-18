@@ -11,6 +11,20 @@ svg text {
   margin: 0;
   padding: 0;
 }
+.ctn-controls {
+  margin: 10px 0 6px 20px;
+}
+.drunk-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #fff;
+}
+.drunk-toggle input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+}
 .ctn-filter {
   width: 1100px;
 }
@@ -18,7 +32,8 @@ svg text {
   margin-left: 20px;
 }
 #DeathMonth,
-#AcciMonth {
+#AcciMonth,
+#DrunkMonth {
   width: 330px;
 }
 .ctn-nav {
