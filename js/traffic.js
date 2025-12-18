@@ -56,7 +56,7 @@ var colorDead,
   causeCodeMap;
 colorDead = "#de2d26";
 colorAcci = "rgb(255, 204, 0)";
-colorDrunk = "royalblue";
+colorDrunk = "#ff4f8b";
 colorDeadScale = d3.scale.ordinal().range([colorDead]);
 colorAcciScale = d3.scale.ordinal().range([colorAcci]);
 colorDrunkScale = d3.scale.ordinal().range([colorDrunk]);
@@ -554,6 +554,10 @@ decodeCode = function (value, map, len) {
   return map[normalized] || map[+normalized] || "未提供";
 };
 setCircle = function (it) {
+  var baseOpacity, isDrunk;
+  isDrunk = function (d) {
+    return d.isDrunk;
+  };
   return it
     .attr({
       cx: function (it) {
@@ -563,19 +567,36 @@ setCircle = function (it) {
         return map.latLngToLayerPoint([it.GoogleLat, it.GoogleLng]).y;
       },
       r: function (it) {
+        if (highlightDrunk) {
+          return it.isDrunk ? "6px" : "0px";
+        }
+        if (it.isDrunk) {
+          return "5px";
+        }
         return ifdead(it, "5px", "2.5px");
       },
     })
+    .classed("drunk-marker", isDrunk)
+    .classed("drunk-highlight", function (it) {
+      return highlightDrunk && it.isDrunk;
+    })
     .style({
       fill: function (it) {
-        if (highlightDrunk && it.isDrunk) {
+        if (it.isDrunk) {
           return colorDrunk;
         }
         return ifdead(it, colorDead, colorAcci);
       },
       position: "absolute",
       opacity: function (it) {
-        return ifdead(it, 1, 0.3);
+        baseOpacity = ifdead(it, 1, 0.3);
+        if (highlightDrunk) {
+          return it.isDrunk ? 1 : 0;
+        }
+        if (it.isDrunk) {
+          return Math.max(baseOpacity, 0.85);
+        }
+        return baseOpacity;
       },
     });
 };
