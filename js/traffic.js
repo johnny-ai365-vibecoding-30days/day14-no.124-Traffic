@@ -56,7 +56,7 @@ var colorDead,
   causeCodeMap;
 colorDead = "#de2d26";
 colorAcci = "rgb(255, 204, 0)";
-colorDrunk = "royalblue";
+colorDrunk = "#ff4fa3";
 colorDeadScale = d3.scale.ordinal().range([colorDead]);
 colorAcciScale = d3.scale.ordinal().range([colorAcci]);
 colorDrunkScale = d3.scale.ordinal().range([colorDrunk]);
@@ -563,20 +563,71 @@ setCircle = function (it) {
         return map.latLngToLayerPoint([it.GoogleLat, it.GoogleLng]).y;
       },
       r: function (it) {
+        if (highlightDrunk && it.isDrunk) {
+          return "5px";
+        }
         return ifdead(it, "5px", "2.5px");
+      },
+      class: function (it) {
+        var cls;
+        cls = [];
+        if (it.dead > 0) {
+          cls.push("death-point");
+        }
+        if (it.isDrunk) {
+          cls.push("drunk-point");
+        }
+        if (highlightDrunk && it.isDrunk) {
+          cls.push("drunk-active");
+        }
+        return cls.join(" ");
       },
     })
     .style({
       fill: function (it) {
-        if (highlightDrunk && it.isDrunk) {
+        if (it.isDrunk) {
           return colorDrunk;
         }
         return ifdead(it, colorDead, colorAcci);
       },
-      position: "absolute",
-      opacity: function (it) {
-        return ifdead(it, 1, 0.3);
+      stroke: function (it) {
+        if (it.isDrunk) {
+          return "#fff";
+        }
+        return "none";
       },
+      "stroke-width": function (it) {
+        if (it.isDrunk) {
+          return "1px";
+        }
+        return 0;
+      },
+      position: "absolute",
+      display: function (it) {
+        if (highlightDrunk && !it.isDrunk) {
+          return "none";
+        }
+        return "block";
+      },
+      opacity: function (it) {
+        if (highlightDrunk && !it.isDrunk) {
+          return 0;
+        }
+        return ifdead(it, 1, 0.35);
+      },
+      animation: function (it) {
+        if (highlightDrunk && it.isDrunk) {
+          return "drunk-pulse 1.6s ease-in-out infinite";
+        }
+        return "none";
+      },
+      transform: function (it) {
+        if (highlightDrunk && it.isDrunk) {
+          return "scale(1.1)";
+        }
+        return "scale(1)";
+      },
+      "transform-origin": "center center",
     });
 };
 initCircle = function (it) {
