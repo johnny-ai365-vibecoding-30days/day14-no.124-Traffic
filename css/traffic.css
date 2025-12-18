@@ -11,6 +11,18 @@ svg text {
   margin: 0;
   padding: 0;
 }
+.ctn-controls {
+  margin: 12px 0 0 20px;
+}
+.toggle-drunk {
+  color: #fff;
+  background-color: #333;
+  border-color: #555;
+}
+.toggle-drunk.active {
+  background-color: royalblue;
+  border-color: royalblue;
+}
 .ctn-filter {
   width: 1100px;
 }
@@ -18,7 +30,8 @@ svg text {
   margin-left: 20px;
 }
 #DeathMonth,
-#AcciMonth {
+#AcciMonth,
+#DrunkMonth {
   width: 330px;
 }
 .ctn-nav {

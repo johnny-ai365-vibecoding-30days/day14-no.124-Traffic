@@ -1,7 +1,9 @@
 var colorDead,
   colorAcci,
+  colorDrunk,
   colorDeadScale,
   colorAcciScale,
+  colorDrunkScale,
   genderMap,
   injurySeverityMap,
   injuryPositionMap,
@@ -23,6 +25,7 @@ var colorDead,
   hourDim,
   map,
   barAcciHour,
+  highlightDrunk,
   initMap,
   ifdead,
   setCircle,
@@ -53,8 +56,10 @@ var colorDead,
   causeCodeMap;
 colorDead = "#de2d26";
 colorAcci = "rgb(255, 204, 0)";
+colorDrunk = "royalblue";
 colorDeadScale = d3.scale.ordinal().range([colorDead]);
 colorAcciScale = d3.scale.ordinal().range([colorAcci]);
+colorDrunkScale = d3.scale.ordinal().range([colorDrunk]);
 lngDim = null;
 latDim = null;
 weekDayTable = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
@@ -64,6 +69,7 @@ weekdayDim = null;
 hourDim = null;
 map = null;
 barAcciHour = null;
+highlightDrunk = false;
 weatherMap = {
   1: "暴雨",
   2: "強風",
@@ -562,6 +568,9 @@ setCircle = function (it) {
     })
     .style({
       fill: function (it) {
+        if (highlightDrunk && it.isDrunk) {
+          return colorDrunk;
+        }
         return ifdead(it, colorDead, colorAcci);
       },
       position: "absolute",
@@ -596,11 +605,18 @@ d3.tsv("./accidentXY_113.tsv", function (err, tsvBody) {
     barPerHour,
     barAcciMonth,
     barAcciWeekDay,
+    barAcciHour,
+    barDrunkMonth,
+    barDrunkWeekDay,
+    barDrunkHour,
     ndx,
     all,
     acciMonth,
     acciWeekDay,
     acciHour,
+    drunkMonth,
+    drunkWeekDay,
+    drunkHour,
     deathMonth,
     deathWeekDay,
     deathHour,
@@ -615,6 +631,7 @@ d3.tsv("./accidentXY_113.tsv", function (err, tsvBody) {
     nav;
   deadData = [];
   tsvBody.filter(function (d) {
+    var drinkingCode;
     d.GoogleLng = +d.GoogleLng;
     d.GoogleLat = +d.GoogleLat;
     // 將時間欄位轉成數字，避免交叉篩選時以字串比較導致範圍內沒有資料
@@ -678,6 +695,9 @@ d3.tsv("./accidentXY_113.tsv", function (err, tsvBody) {
         return val !== "未提供";
       })
       .join(" / ") || "未提供";
+    drinkingCode = +d["飲酒情形"];
+    d.isDrunk =
+      drinkingCode >= 4 && drinkingCode <= 8 && !Number.isNaN(drinkingCode);
     d.countyLocation =
       (d["縣市"] || "") +
       (d["行政區"] ? " " + d["行政區"] : "") +
@@ -694,6 +714,9 @@ d3.tsv("./accidentXY_113.tsv", function (err, tsvBody) {
   barAcciMonth = dc.barChart("#AcciMonth");
   barAcciWeekDay = dc.barChart("#AcciWeekDay");
   barAcciHour = dc.barChart("#AcciHour");
+  barDrunkMonth = dc.barChart("#DrunkMonth");
+  barDrunkWeekDay = dc.barChart("#DrunkWeekDay");
+  barDrunkHour = dc.barChart("#DrunkHour");
   dataTable = dc.dataTable("#AccidentTable");
   ndx = crossfilter(tsvBody);
   all = ndx.groupAll();
@@ -719,6 +742,15 @@ d3.tsv("./accidentXY_113.tsv", function (err, tsvBody) {
   acciMonth = monthDim.group().reduceCount();
   acciWeekDay = weekdayDim.group().reduceCount();
   acciHour = hourDim.group().reduceCount();
+  drunkMonth = monthDim.group().reduceSum(function (it) {
+    return it.isDrunk ? 1 : 0;
+  });
+  drunkWeekDay = weekdayDim.group().reduceSum(function (it) {
+    return it.isDrunk ? 1 : 0;
+  });
+  drunkHour = hourDim.group().reduceSum(function (it) {
+    return it.isDrunk ? 1 : 0;
+  });
   deathMonth = monthDim.group().reduceSum(function (it) {
     return it.dead;
   });
@@ -799,6 +831,21 @@ d3.tsv("./accidentXY_113.tsv", function (err, tsvBody) {
     })
     .yAxis()
     .ticks(4);
+  barDrunkMonth
+    .width(barMt)
+    .height(100)
+    .margins(marginMt)
+    .dimension(monthDim)
+    .group(drunkMonth)
+    .x(d3.scale.ordinal().domain(d3.range(1, 13)))
+    .xUnits(dc.units.ordinal)
+    .elasticY(true)
+    .colors(colorDrunkScale)
+    .on("filtered", function (c, f) {
+      return updateGraph();
+    })
+    .yAxis()
+    .ticks(4);
   barAcciWeekDay
     .width(barWk)
     .height(100)
@@ -815,6 +862,22 @@ d3.tsv("./accidentXY_113.tsv", function (err, tsvBody) {
     })
     .yAxis()
     .ticks(4);
+  barDrunkWeekDay
+    .width(barWk)
+    .height(100)
+    .margins(marginWk)
+    .dimension(weekdayDim)
+    .group(drunkWeekDay)
+    .x(d3.scale.ordinal().domain(weekDayTable))
+    .xUnits(dc.units.ordinal)
+    .elasticY(true)
+    .gap(4)
+    .colors(colorDrunkScale)
+    .on("filtered", function (c, f) {
+      return updateGraph();
+    })
+    .yAxis()
+    .ticks(4);
   barAcciHour
     .width(barHr)
     .height(100)
@@ -824,6 +887,20 @@ d3.tsv("./accidentXY_113.tsv", function (err, tsvBody) {
     .x(d3.scale.linear().domain([0, 24]))
     .elasticY(true)
     .colors(colorAcciScale)
+    .on("filtered", function (c, f) {
+      return updateGraph();
+    })
+    .yAxis()
+    .ticks(4);
+  barDrunkHour
+    .width(barHr)
+    .height(100)
+    .margins(marginHr)
+    .dimension(hourDim)
+    .group(drunkHour)
+    .x(d3.scale.linear().domain([0, 24]))
+    .elasticY(true)
+    .colors(colorDrunkScale)
     .on("filtered", function (c, f) {
       return updateGraph();
     })
@@ -932,6 +1009,16 @@ d3.tsv("./accidentXY_113.tsv", function (err, tsvBody) {
     .showGroups(false);
   dc.renderAll();
   updateGraph();
+  (function () {
+    var drunkToggleButton;
+    drunkToggleButton = d3.select("#DrunkToggle");
+    return drunkToggleButton.on("click", function () {
+      highlightDrunk = !highlightDrunk;
+      drunkToggleButton.classed("active", highlightDrunk);
+      drunkToggleButton.text(highlightDrunk ? "酒駕標示：開" : "酒駕標示：關");
+      return updateGraph();
+    });
+  })();
   navls = [
     {
       ttl: "事故交叉篩選",
